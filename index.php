@@ -1,6 +1,13 @@
 <?php
-    require( 'connection.php' );
+    require( 'include/config.php' );
+    require( 'include/connection.php' );
 
+    require( 'include/db-settings.php' );
 
-    require( 'end.php' );
+    require( 'include/settings.php' );
+
+    require( 'include/template-loader.php' );
+
+    require( 'include/end.php' );
+
 ?>

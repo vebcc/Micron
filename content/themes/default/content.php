@@ -20,7 +20,7 @@
 
         <?php } else {?>
 
-        <div style="padding-top:20px;">
+        <div>
             <h2><a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>" ><?php the_title(); ?></a></h2>
             <div class="post-meta-frontpage">
                 <?php the_category(', ');?> |

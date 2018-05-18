@@ -11,4 +11,5 @@ define('_banner_', $db_settings["banner"]);
 
 define('_theme_url', 'content/themes/'._theme_.'/');
 
+
 ?>

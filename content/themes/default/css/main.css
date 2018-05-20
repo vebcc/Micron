@@ -1,0 +1,14 @@
+body{
+    background-color: black;
+}
+#content{
+    background-color: yellowgreen;
+    height: 100px;
+}
+.cont{
+    height: 100%;
+    background-color: pink;
+}
+.row{
+    background-color: red;
+}

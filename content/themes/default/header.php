@@ -6,7 +6,6 @@
     <head>
         <?php mic_head(); ?>
         <link rel="stylesheet" href="<?php echo _theme_url ?>bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
-
         <link rel="stylesheet" id="main-css" href="<?php echo _theme_url ?>css/main.css" type="text/css">
     </head>
 

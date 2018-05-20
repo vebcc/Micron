@@ -1,3 +1,5 @@
 <?php
-echo " it works - main";
+    if(typepage=="normal"){
+        // nope
+    }
 ?>

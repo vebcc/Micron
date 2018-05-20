@@ -1,10 +1,30 @@
 <?php
 
+function mic($name, $admin=0){
+    global $db_settings;
+    switch($name){
+        case "theme_url":
+            if($admin==0){
+                echo 'content/themes/'.$db_settings["theme"].'/';
+            }else{
+                return 'content/themes/'.$db_settings["theme"].'/';
+            }
+            break;
+        default:
+            if($admin==0){
+                echo $db_settings[$name];
+            }else{
+                return $db_settings[$name];
+            }
+            break;
+    }
+}
+
 function mic_head(){
-    echo "<meta charset='"._charset_."'>
-        <meta name='description' content='"._description_."'>
-        <meta name='author' content='"._author_."'>
-        <title>"._title_."</title>
+    echo "<meta charset='".mic('charset',1)."'>
+        <meta name='description' content='".mic('description',1)."'>
+        <meta name='author' content='".mic('author',1)."'>
+        <title>".mic('title',1)."</title>
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>";
 
         // Wstawianie deklaracji wszystkich styli
@@ -14,18 +34,28 @@ function mic_head(){
 }
 
 function mic_banner($class){
-    echo "<img src='content/images/"._banner_."' alt='"._title_."' class='$class'>";
+    echo "<img src='content/images/".mic('banner',1)."' alt='".mic('title',1)."' class='$class'>";
 }
 
-//FIXME: tablica $db_row  nie jest wykrywana w functions.php  w mic_menu() a poza jest.
-
-function mic_menu(){
-    for($i=0;$i<count($db_menu);$i++){
+function mic_main_menu(){
+    global $db_main_menu;
+    for($i=0;$i<count($db_main_menu);$i++){
         echo"<ul>
-                <li><a href='".$db_menu[$i][2]."'>".$db_menu[$i][0]."</a></li>
+                <li><a href='". mic('adress',1) . $db_main_menu[$i][2]."'>".$db_main_menu[$i][0]."</a></li>
              </ul>";
 
     }
 }
+
+function mic_menu($name){
+    global $db_menu;
+    for($i=0;$i<count($db_menu[$name]);$i++){
+        echo"<ul>
+                <li><a href='". mic('adress',1) . $db_menu[$name][$i][2]."'>".$db_menu[$name][$i][0]."</a></li>
+             </ul>";
+
+    }
+}
+
 ?>
 

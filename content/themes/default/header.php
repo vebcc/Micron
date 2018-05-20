@@ -2,11 +2,11 @@
     // header
 ?>
 <!DOCTYPE html>
-<html lang="<?php _lang_; ?>" >
+<html lang="<?php mic("lang"); ?>" >
     <head>
         <?php mic_head(); ?>
-        <link rel="stylesheet" href="<?php echo _theme_url ?>bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
-        <link rel="stylesheet" id="main-css" href="<?php echo _theme_url ?>css/main.css" type="text/css">
+        <link rel="stylesheet" href="<?php mic("theme_url"); ?>bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
+        <link rel="stylesheet" id="main-css" href="<?php mic("theme_url"); ?>css/main.css" type="text/css">
     </head>
 
     <body>
@@ -18,11 +18,10 @@
                         <a class="link-banner" href="#">
                             <?php mic_banner("banner"); ?>
                         </a>
-
                     </div><!-- .site-branding -->
                 </header><!-- .site-header -->
                 <div id="menu"></div>
-                    <?php //mic_menu() ?>
+                    <?php mic_main_menu(); ?>
                 </div>
             </div><!-- .sidebar -->
 

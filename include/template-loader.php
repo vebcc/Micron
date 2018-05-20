@@ -1,5 +1,5 @@
 <?php
 
-require( _theme_url . '/loader.php' );
+require( mic('theme_url',1). '/loader.php' );
 
 ?>

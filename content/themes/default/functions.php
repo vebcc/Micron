@@ -1,27 +1,27 @@
 <?php
     //echo " it works";
 function get_header(){
-    require( _theme_url.'header.php' );
+    require( mic('theme_url',1).'header.php' );
 }
 
 function get_main(){
-    require( _theme_url.'main.php' );
+    require( mic('theme_url',1).'main.php' );
 
 }
 function get_sidebar(){
-    require( _theme_url.'sidebar.php' );
+    require( mic('theme_url',1).'sidebar.php' );
 }
 
 function get_footer(){
-    require( _theme_url.'footer.php' );
+    require( mic('theme_url',1).'footer.php' );
 }
 
 function get_page(){
-    require( _theme_url.'page.php' );
+    require( mic('theme_url',1).'page.php' );
 }
 
 function get_content(){
-    require( _theme_url.'content.php' );
+    require( mic('theme_url',1).'content.php' );
 }
 
 ?>

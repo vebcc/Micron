@@ -1,4 +1,7 @@
-<article>
+<?php
+// NOTE: content.php aktualnie nic nie robi ani do niczego nie jest polaczone
+?>
+   <article>
     <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
         <?php if ( has_post_thumbnail() ) { // check if the post has a Post Thumbnail assigned to it. ?>
 

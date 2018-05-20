@@ -1,7 +1,7 @@
 <?php
     //echo _theme_url.'functions.php';
-    require( _theme_url.'functions.php' );
+    require( mic('theme_url',1).'functions.php' );
     //echo " loader work";
 
-    require( _theme_url.'index.php' );
+    require( mic('theme_url',1).'index.php' );
 ?>

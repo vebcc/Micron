@@ -1,3 +1,22 @@
-content{
-    width: 100%;
+body{
+    background: #f1f1f1;
+    color: #444;
+}
+.mycontainer{
+    height: 98%;
+}
+.content{
+    min-height: 100%;
+    padding-top: 50px;
+}
+.menu{
+    background-color: #222;
+    /*border-color: #080808; */
+    padding-top: 50px;
+    min-height: 100%;
+}
+
+.ulmenu{
+    max-height: 100%;
+    overflow-y: hidden;
 }

@@ -1,18 +1,31 @@
-<html>
+<html lang="pl">
     <head>
+        <title>Panel Admina - Micron</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
 
         <?php
 
         session_start(); // start sesji
 
+        //TODO: zabezpieczenie przed get.
+        //if(isset($_GET['ollogin'])){
+        //    if ($_GET['ollogin'] != '') { //jezeli ktos przez adres probuje kombinowac
+        //        exit;
+        //    }
+        //    if ($_GET['olhaslo'] != '') { //jezeli ktos przez adres probuje kombinowac
+        //        exit;
+        //    }
+        //}
+
         if(!isset($_SESSION["error"])){ // czy sesja zawiera jakis error
             if(!isset($_SESSION["login"]) && !isset($_SESSION['token']) && !isset($_SESSION['token2'])){ // czy zmienne sesji nie sa ustawione
                 if (isset($_POST['cookie']) && isset($_POST['logem'])) { // czy zmienne formularza sa ustawione / przeslane
 
                     $db = 1; // zmiena pozwalajaca na rozruch pliku connection.php
-                    require("config.php"); // dane logowania mysql
-                    require("connection.php"); // polaczenie z baza danych
+                    require("include/config.php"); // dane logowania mysql
+                    require("include/connection.php"); // polaczenie z baza danych
 
                     $actual_ip = $_SERVER['REMOTE_ADDR']; // pobranie adresu ip klienta
 
@@ -56,7 +69,7 @@
                                 $_SESSION["login"] = $login; // zapis loginu do sesji
                                 $_SESSION['token'] = md5($_SERVER['HTTP_USER_AGENT']); // zapis user agent do sesji w md5
                                 $_SESSION['token2'] = md5($actual_ip); // zapis ip klienta do sesji w md5
-                                header('Location: index.php'); // przeniesienie zalogowanego klienta na strone glowna (refresh)
+                                header('Location: ./'); // przeniesienie zalogowanego klienta na strone glowna (refresh)
                             }else{
                                 $error = "Zły login lub hasło!"; // wyslanie erroru o blednym hasle
 
@@ -72,11 +85,11 @@
                                     // jesli tak
                                     // funkcja dodajaca bana do bazy
                                     $db_query = mysqli_query($con,"INSERT INTO `micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'loginban', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
-                                    header('Location: index.php'); // przeniesienie klienta na strone glowna (refresh)
+                                    header('Location: ./'); // przeniesienie klienta na strone glowna (refresh)
                                 }
                             }
                         }else{
-                            switch($banned[1]){
+                            switch($banned[1]){ //Konwertowanie tekstu do wyswietlenia
                                 case "MINUTE":
                                     $bantext = "Minut";
                                     break;
@@ -87,29 +100,29 @@
                                     $bantext = "Dni";
                                     break;
                             }
-                            $error = "Jesteś zbanowany na ". $banned[0] . " " . $bantext . ".";
+                            $error = "Jesteś zbanowany na ". $banned[0] . " " . $bantext . "."; // error mowiacy o banie czasowym
                         }
                     }else{
-                        $error = "Zostałeś permamentnie zbanowany. Jeżeli uważasz że to błąd skontaktuj się z Administratorem.";
+                        $error = "Zostałeś permamentnie zbanowany. Jeżeli uważasz że to błąd skontaktuj się z Administratorem."; // error o perm banie
                     }
                 }
-                require("login.php");
+                require("login.php"); // include formularza logowania
             }else{
-                if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){
+                if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){ // sprawdzanie czy dane z sesji zgadzaja sie z danymi klienta
                     $login = $_SESSION['login'];
-                    //echo "Siemka zalogowany $login!";
-                    require("panel_admin.php");
+                    require("panel_admin.php"); // include panel admina
                 }else{
-                    $error = "Zaloguj się ponownie!";
+                    $error = "Zaloguj się ponownie!"; // error przez inne dane sesji i klienta (moze blad moze próba ataku sesji)
                 }
             }
         }else{
-            $error = $_SESSION['error'];
-            unset($_SESSION['error']);
+            $error = $_SESSION['error']; // przeslanie error sesji z panelu admina
+            unset($_SESSION['error']); // usuniecie zmiennej error z sesji
 
+            // dodanie do bazy informacji o probie ingerencji przez wejscie w inne pliki niz index.php (rownoznaczne z perm banem)
             $db_query = mysqli_query($con,"INSERT INTO `micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'interference', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
 
-            require("login.php");
+            require("login.php"); // include formularza logowania
         }
         ?>
 

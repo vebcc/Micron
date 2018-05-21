@@ -26,6 +26,13 @@
                 <button type="submit" class="btn btn-primary">Zaloguj się</button>
             </div>
         </div>
+        <div class="error">
+            <?php
+                if(isset($error)){
+                    echo $error;
+                }
+            ?>
+        </div>
         <input type="hidden" name="cookie" value="1">
     </form>
 

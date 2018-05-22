@@ -19,13 +19,17 @@
         //    }
         //}
 
+        $db = 1; // zmiena pozwalajaca na rozruch pliku connection.php
+        require("include/config.php"); // dane logowania mysql
+        require("include/connection.php"); // polaczenie z baza danych
+
         if(!isset($_SESSION["error"])){ // czy sesja zawiera jakis error
             if(!isset($_SESSION["login"]) && !isset($_SESSION['token']) && !isset($_SESSION['token2'])){ // czy zmienne sesji nie sa ustawione
                 if (isset($_POST['cookie']) && isset($_POST['logem'])) { // czy zmienne formularza sa ustawione / przeslane
 
-                    $db = 1; // zmiena pozwalajaca na rozruch pliku connection.php
-                    require("include/config.php"); // dane logowania mysql
-                    require("include/connection.php"); // polaczenie z baza danych
+                    //$db = 1; // zmiena pozwalajaca na rozruch pliku connection.php
+                    //require("include/config.php"); // dane logowania mysql
+                    //require("include/connection.php"); // polaczenie z baza danych
 
                     $actual_ip = $_SERVER['REMOTE_ADDR']; // pobranie adresu ip klienta
 
@@ -124,6 +128,7 @@
 
             require("login.php"); // include formularza logowania
         }
+        $con->close(); // konczenie polaczenia z baza danych
         ?>
 
         <!-- Bootstrap core JavaScript -->

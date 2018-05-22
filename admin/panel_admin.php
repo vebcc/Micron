@@ -4,6 +4,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
         $login = $_SESSION['login'];
         echo "Siemka zalogowany $login!";
 
+        require("include/functions.php"); // include functions.php
+
         $directory = 'include/section'; // folder sekcji
         $includelist = scandir($directory); // wyszukuje wszystkie sekcje
 

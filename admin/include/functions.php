@@ -6,9 +6,9 @@
 
         $type1 = "SELECT permissions.name, permissions.value FROM permissions, groups, users WHERE permissions.group_id=groups.id_rangi AND groups.id_rangi=users.ranga_id AND users.login='$login' AND (permissions.section='page' OR permissions.section='$section') AND permissions.name='*' AND permissions.value=1;";
 
-        $type2 = "SELECT permissions.name, permissions.value FROM permissions, groups, users WHERE permissions.group_id=groups.id_rangi AND groups.id_rangi=users.ranga_id AND users.login='$login' AND permissions.section='$section';"
+        $type2 = "SELECT permissions.name, permissions.value FROM permissions, groups, users WHERE permissions.group_id=groups.id_rangi AND groups.id_rangi=users.ranga_id AND users.login='$login' AND permissions.section='$section' AND permissions.value=1;"
 
-        $type3 = "SELECT permissions.name, permissions.value FROM permissions, groups, users WHERE permissions.group_id=groups.id_rangi AND groups.id_rangi=users.ranga_id AND users.login='$login' AND permissions.section='$section' AND permissions.name='$name';";
+            $type3 = "SELECT permissions.name, permissions.value FROM permissions, groups, users WHERE permissions.group_id=groups.id_rangi AND groups.id_rangi=users.ranga_id AND users.login='$login' AND permissions.section='$section' AND permissions.name='$name' AND permissions.value=1;";
 
         $db_query = mysqli_query($con, $type1);
         $db_row = mysqli_fetch_assoc($db_query);

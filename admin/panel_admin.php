@@ -34,6 +34,10 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 <li><a href="#">Page 2</a></li>
                 <li><a href="#">Page 3</a></li>
             </ul>
+            <ul class="nav navbar-nav logout">
+                <li><a href="index.php?logout=1">Wyloguj się</a></li>
+                <li><a href="#">ULOGO</a></li>
+            </ul>
         </div>
     </nav>
     <div class="container-fluid mycontainer">
@@ -42,7 +46,9 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 <ul class="nav nav-pills nav-stacked ulmenu">
                    <?php
                         for($i=0;$i<count($alink);$i++){ // petla wyswietlajaca wszystkie linki z plikow
-                            echo "<li><a href='index.php?goto=".$alink[$i][1]."'>".$alink[$i][2]."</a></li>"; // wyswietlenie linku w menu
+                            if(checkpermission("section", $alink[$i][1])){
+                                echo "<li><a href='index.php?goto=".$alink[$i][1]."'>".$alink[$i][2]."</a></li>"; // wyswietlenie linku w menu
+                            }
                         }
                     ?>
                     <!--<li class="active"><a href="index.php?goto=home">Home</a></li> -->
@@ -67,6 +73,10 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
     </div>
 
     <?php
+
+        if(isset($_GET['logout']) && $_GET['logout']==1){ // czy zmienna logout w get jest ustawiona
+            logout();
+        }
 
     }else{
         $error = "Zaloguj się ponownie!"; // przeslanie bledu logowania

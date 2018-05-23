@@ -9,6 +9,16 @@
 
         session_start(); // start sesji
 
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $actual_ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $actual_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $actual_ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        //$actual_ip = $_SERVER['REMOTE_ADDR']; // pobranie adresu ip klienta
+
         //TODO: zabezpieczenie przed get.
         //if(isset($_GET['ollogin'])){
         //    if ($_GET['ollogin'] != '') { //jezeli ktos przez adres probuje kombinowac
@@ -30,8 +40,6 @@
                     //$db = 1; // zmiena pozwalajaca na rozruch pliku connection.php
                     //require("include/config.php"); // dane logowania mysql
                     //require("include/connection.php"); // polaczenie z baza danych
-
-                    $actual_ip = $_SERVER['REMOTE_ADDR']; // pobranie adresu ip klienta
 
                     // zapytanie sprawdzajace czy dane ip ma permbana
                     $db_query = mysqli_query($con,"SELECT COUNT(*) AS fullblock FROM fail_login_ban WHERE ip='$actual_ip' AND fail_login_ban.error='interference';");

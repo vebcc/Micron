@@ -20,3 +20,21 @@ body{
     max-height: 100%;
     overflow-y: hidden;
 }
+.logout{
+    float: right;
+}
+#settings{
+
+}
+#settings > h1{
+    text-align: center;
+    margin-top: 20px;
+}
+.centercv{
+    margin: 0 auto;
+    width: 70%;
+    padding-right: 100px;
+}
+.sumb{
+    text-align: center;
+}

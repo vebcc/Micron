@@ -3,12 +3,6 @@
 if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['token2'])){
     if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){
         $login = $_SESSION['login'];
-
-        foreach($_POST as $key => $value){
-            if($value){
-                $db_query = mysqli_query($con, "UPDATE `micron`.`settings` SET `pl_value` = '$value' WHERE `settings`.`name` = '$key';");
-            }
-        }
 ?>
 
 <div id="settings">
@@ -23,6 +17,17 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 }else{
                     $fullperm=0;
                 }
+
+                foreach($_POST as $key => $value){
+                    if(isset($permlist[$key]) OR $fullperm){
+                        if($value){
+                            $key = htmlspecialchars(stripslashes(strip_tags(trim($key))));
+                            $value = htmlspecialchars(stripslashes(strip_tags(trim($value))));
+                            $db_query = mysqli_query($con, "UPDATE `micron`.`settings` SET `pl_value` = '$value' WHERE `settings`.`name` = '$key';");
+                        }
+                    }
+                }
+
                 $db_query = mysqli_query($con, "SELECT name, pl_value, description FROM settings;");
                 while($db_row = mysqli_fetch_assoc($db_query)){
                     if(isset($permlist[$db_row["name"]]) OR $fullperm){

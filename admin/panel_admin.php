@@ -60,7 +60,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                        if(isset($_GET['goto'])){ // czy zmienna goto w get jest ustawiona
                            require("include/section/". $_GET['goto'] .".php"); // jesli tak to przekieruj do pliku z przeslana nazwa
                        }else{
-                           require("include/home.php"); // jesli nie to przekieruj do home
+                           require("include/section/home.php"); // jesli nie to przekieruj do home
                        }
                         //for($i=2;$i<count($includelist);$i++){
                         //    $asection = explode(".", $includelist[$i]);

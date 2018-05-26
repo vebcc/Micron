@@ -1,5 +1,7 @@
 <?php
+
     // funkcja sprawdzajaca pozwolenia usera
+    $permlist = array();
     function checkpermission($section, $name=0){
         // ex1: settings / author
         // ex2: section  / 0

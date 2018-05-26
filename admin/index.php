@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
 
         <?php
-
+        set_include_path(get_include_path() . PATH_SEPARATOR . 'D:\Pliki\Git');
         session_start(); // start sesji
 
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {

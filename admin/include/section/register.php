@@ -7,13 +7,18 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 ?>
 
 <div id="register">
-    <h1>Dodaj Użytkownika</h1>
+   <?php
+        $edituser=0;
+        if(isset($_GET["usereditor"]) && !empty($_GET["usereditor"])){
+            $edituser=1;
+            echo "<h1>Edytuj użytkownika</h1>";
+        }else{
+            echo "<h1>Dodaj Użytkownika</h1>";
+        }
 
-            <?php
         if(checkpermission("section", "register")){
             if(checkpermission("register")){
                 $success="";
-                $edituser=0;
 
                 if(isset($_GET["deluser"]) && !empty($_GET["deluser"])){
                     $deluser = htmlspecialchars(stripslashes(strip_tags(trim($_GET["deluser"]))));
@@ -21,15 +26,10 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     $success = "Użytkownik został usunięty!";
                 }
 
-                if(isset($_GET["edituser"])){
-                    $edituser=1;
-                    //TODO: Panel edycji usera;
-                }
-
                 $regerror=" ";
                 $regfail= array("login"=>0,"email"=>0,"pwd"=>0,"pwd2"=>0,"rang"=>0, "pwd2no"=>0, "loginex"=>0, "emailex"=>0, "pwdbad"=>0, "emailbad"=>0, "loginbad"=>0);
                 $nofail = 1;
-                if(isset($_POST["register"])){
+                if(isset($_POST["register"]) || isset($_POST["edituser"])){
 
                     if(!empty($_POST["reglogin"])){
                         $reglogin = htmlspecialchars(stripslashes(strip_tags(trim($_POST["reglogin"]))));
@@ -41,18 +41,6 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $regemail = htmlspecialchars(stripslashes(strip_tags(trim($_POST["regemail"]))));
                     }else{
                         $regfail["email"]=1;
-                        $nofail=0;
-                    }
-                    if(!empty($_POST["regpwd"])){
-                        $regpwd = htmlspecialchars(stripslashes(strip_tags(trim($_POST["regpwd"]))));
-                    }else{
-                        $regfail["pwd"]=1;
-                        $nofail=0;
-                    }
-                    if(!empty($_POST["regpwd2"])){
-                        $regpwd2 = htmlspecialchars(stripslashes(strip_tags(trim($_POST["regpwd2"]))));
-                    }else{
-                        $regfail["pwd2"]=1;
                         $nofail=0;
                     }
                     if(!empty($_POST["regrang"])){
@@ -67,6 +55,21 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                             $regfail["loginbad"]=1;
                             $nofail=0;
                         }
+                    }
+
+                }
+                if(isset($_POST["register"])){
+                    if(!empty($_POST["regpwd"])){
+                        $regpwd = htmlspecialchars(stripslashes(strip_tags(trim($_POST["regpwd"]))));
+                    }else{
+                        $regfail["pwd"]=1;
+                        $nofail=0;
+                    }
+                    if(!empty($_POST["regpwd2"])){
+                        $regpwd2 = htmlspecialchars(stripslashes(strip_tags(trim($_POST["regpwd2"]))));
+                    }else{
+                        $regfail["pwd2"]=1;
+                        $nofail=0;
                     }
 
                     if(!$regfail["email"]){
@@ -110,6 +113,11 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
                         $success = "Użytkownik został dodany!";
                     }
+                }
+
+                if(isset($_POST["edituser"])){
+
+                    echo "nosiema";
                 }
                 ?>
     <div class="centercv">
@@ -157,34 +165,47 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     echo "<div class='alert alert-success'><p>$success</p></div>";
                 }
 
+                if($edituser){
+                    //TODO: Panel edycji usera;
+                    $editthisuser= htmlspecialchars(stripslashes(strip_tags(trim($_GET["usereditor"]))));
+                    $db_query = mysqli_query($con, "SELECT login, email, ranga_id FROM users WHERE user_id=$editthisuser;");
+                    $db_row = mysqli_fetch_assoc($db_query);
+                    ;
+                    $reglogin = $db_row["login"];
+                    $regemail = $db_row["email"];
+                    $regpwd = "";
+                    $regpwd2 = "";
+                    $regrang = $db_row["ranga_id"];;
+                }
+
             ?>
 
         <form class="form-horizontal" action="index.php?goto=register" method="post">
             <div class='form-group <?php if($regfail["login"] || $regfail["loginbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='reglogin'>Login:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login' value ="<?php if(!$regfail["login"] && !$regfail["loginbad"]){echo $reglogin;} ?>" autocomplete="off">
+                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login' value ="<?php if(!$regfail["login"] && isset($reglogin) && !$regfail["loginbad"]){echo $reglogin;} ?>" autocomplete="off">
                     <?php if($regfail["login"]|| $regfail["loginbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["email"] || $regfail["emailbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regemail'>Email:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' name='regemail' placeholder='Email' value ="<?php if(!$regfail["email"] && !$regfail["emailbad"]){echo $regemail;} ?>"  autocomplete="off">
+                    <input type='text' class='form-control' name='regemail' placeholder='Email' value ="<?php if(!$regfail["email"] && isset($regemail) && !$regfail["emailbad"]){echo $regemail;} ?>"  autocomplete="off">
                     <?php if($regfail["email"] || $regfail["emailbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd'>Hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło' value ="<?php if(!$regfail["pwd"] && !$regfail["pwdbad"]){echo $regpwd;} ?>" autocomplete="off">
+                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło' value ="<?php if(!$regfail["pwd"] && isset($regpwd) && !$regfail["pwdbad"]){echo $regpwd;} ?>" autocomplete="off">
                     <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["pwd2"] || $regfail["pwd2no"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd2'>Powtórz hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło' value ="<?php if(!$regfail["pwd2"] && !$regfail["pwd2no"]){echo $regpwd2;} ?>" autocomplete="off">
+                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło' value ="<?php if(!$regfail["pwd2"] && isset($regpwd2) && !$regfail["pwd2no"]){echo $regpwd2;} ?>" autocomplete="off">
                     <?php if($regfail["pwd2"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
@@ -197,7 +218,13 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         <?php
                             $db_query = mysqli_query($con, "SELECT id_rangi, nazwa FROM groups ORDER BY ord;");
                             while($db_row = mysqli_fetch_assoc($db_query)){
-                                echo "<option value='".$db_row['id_rangi']."'>".$db_row['nazwa']."</option>";
+                                $addrang = "";
+                                if(!$regfail["rang"]){
+                                    if($regrang==$db_row['id_rangi']){
+                                        $addrang = "selected";
+                                    }
+                                }
+                                echo "<option value='".$db_row['id_rangi']."' $addrang>".$db_row['nazwa']."</option>";
                             }
                         ?>
                     </select>
@@ -207,7 +234,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10 sumb">
-                    <input type='hidden' name='register' value="1">
+                    <input type='hidden' name='<?php if(!$edituser){echo "register";}else{echo "edituser";} ?>' value="<?php if(!$edituser){echo 1;}else{echo $_GET["usereditor"];} ?>">
                     <button type="submit" class="btn btn-default">Dodaj</button>
                 </div>
             </div>
@@ -224,11 +251,11 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
             </thead>
             <tbody>
                 <?php
-                $db_query = mysqli_query($con, "SELECT users.login, users.email, groups.nazwa, users.user_id FROM users, groups WHERE users.ranga_id=groups.id_rangi;");
+                $db_query = mysqli_query($con, "SELECT users.login, users.email, groups.nazwa, users.user_id FROM users, groups WHERE users.ranga_id=groups.id_rangi ORDER BY users.ranga_id;");
                 while($db_row = mysqli_fetch_assoc($db_query)){
                     echo "<tr><td>".$db_row['user_id']."</td><td>".$db_row['login']."</td><td>".$db_row['email']."</td><td>".$db_row['nazwa']."</td>
                     <td><a href='index.php?goto=register&deluser=".$db_row['user_id']."' class='reglink'><span class='glyphicon glyphicon-remove'></span></a></td>
-                    <td><a href='index.php?goto=register&edituser=".$db_row['user_id']."' class='reglink'><span class='glyphicon glyphicon-edit'></span></a></td>
+                    <td><a href='index.php?goto=register&usereditor=".$db_row['user_id']."' class='reglink'><span class='glyphicon glyphicon-edit'></span></a></td>
                     </tr>";
                 }
                 ?>

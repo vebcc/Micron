@@ -57,6 +57,13 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         }
                     }
 
+                    if(!$regfail["email"]){
+                        if(!preg_match('/^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,4}$/', $regemail)){
+                            $regfail["emailbad"]=1;
+                            $nofail=0;
+                        }
+                    }
+
                 }
                 if(isset($_POST["register"])){
                     if(!empty($_POST["regpwd"])){
@@ -71,14 +78,6 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $regfail["pwd2"]=1;
                         $nofail=0;
                     }
-
-                    if(!$regfail["email"]){
-                        if(!preg_match('/^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,4}$/', $regemail)){
-                            $regfail["emailbad"]=1;
-                            $nofail=0;
-                        }
-                    }
-
                     if(!$regfail["pwd"] && !$regfail["pwd2"]){
                         if(!preg_match('/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/', $regpwd)){
                             $regfail["pwdbad"]=1;
@@ -90,7 +89,6 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                             }
                         }
                     }
-
                     if($nofail){
                         $db_query = mysqli_query($con, "SELECT login, email FROM users WHERE login='$reglogin';");
                         if(mysqli_num_rows($db_query)){
@@ -107,7 +105,6 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
                     if($nofail){
                         $regpwd = md5($regpwd);
-                        $regpwd2 = md5($regpwd2);
 
                         $db_query = mysqli_query($con, "INSERT INTO `users` (`user_id`, `login`, `email`, `password`, `ranga_id`) VALUES (NULL, '$reglogin', '$regemail', '$regpwd', '$regrang');");
 
@@ -116,8 +113,46 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 }
 
                 if(isset($_POST["edituser"])){
+                    $useraid = $_POST["edituser"];
+                    if(empty($regpwd) && empty($regpwd2)){
+                        $passwd = "";
+                    }else{
+                        if(!preg_match('/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/', $regpwd)){
+                            $regfail["pwdbad"]=1;
+                            $nofail=0;
+                        }else{
+                            if($regpwd!=$regpwd2){
+                                $regfail["pwd2no"]=1;
+                                $nofail=0;
+                            }
+                        }
+                        $regpwd = md5($regpwd);
+                        $passwd = ", password = '$regpwd'";
+                    }
+                    if($nofail){
+                        $db_query = mysqli_query($con, "SELECT login, email FROM users WHERE login='$reglogin';");
+                        if(mysqli_num_rows($db_query)){
+                            $db_row = mysqli_fetch_assoc($db_query);
+                            if($db_row["login"]!=$reglogin){
+                                $regfail["loginex"]=1;
+                                $nofail=0;
+                            }
+                        }
 
-                    echo "nosiema";
+                        $db_query = mysqli_query($con, "SELECT login, email FROM users WHERE email='$regemail';");
+                        if(mysqli_num_rows($db_query)){
+                            $db_row = mysqli_fetch_assoc($db_query);
+                            if($db_row["email"]!=$regemail){
+                                $regfail["emailex"]=1;
+                                $nofail=0;
+                            }
+                        }
+                    }
+                    if($nofail){
+
+                        $db_query = mysqli_query($con, "UPDATE users SET login = '$reglogin', email = '$regemail',$passwd ranga_id = $regrang WHERE users.user_id = $useraid;");
+                        $success = "Użytkownik został edytowany!";
+                    }
                 }
                 ?>
     <div class="centercv">
@@ -180,7 +215,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
             ?>
 
-        <form class="form-horizontal" action="index.php?goto=register" method="post">
+        <form class="form-horizontal" action="index.php?goto=register<?php if($edituser){echo "&usereditor=".$_GET["usereditor"];} ?>" method="post">
             <div class='form-group <?php if($regfail["login"] || $regfail["loginbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='reglogin'>Login:</label>
                 <div class='col-sm-9'>

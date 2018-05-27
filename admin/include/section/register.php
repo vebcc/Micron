@@ -11,11 +11,12 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
             <?php
         if(checkpermission("section", "register")){
             if(checkpermission("register")){
+                $success="";
 
                 if(isset($_GET["deluser"]) && !empty($_GET["deluser"])){
                     $deluser = htmlspecialchars(stripslashes(strip_tags(trim($_GET["deluser"]))));
                     $db_query = mysqli_query($con, "DELETE FROM users WHERE users.user_id=$deluser");
-                    //TODO: wyniki success dla np dobrze dodanego usera lub usuniecie poprawne
+                    $success = "Użytkownik został usunięty!";
                 }
 
                 if(isset($_GET["edituser"])){
@@ -24,7 +25,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 }
 
                 $regerror=" ";
-                $regfail= array("login"=>0,"email"=>0,"pwd"=>0,"pwd2"=>0,"rang"=>0, "pwd2no"=>0, "loginex"=>0, "emailex"=>0);
+                $regfail= array("login"=>0,"email"=>0,"pwd"=>0,"pwd2"=>0,"rang"=>0, "pwd2no"=>0, "loginex"=>0, "emailex"=>0, "pwdbad"=>0, "emailbad"=>0, "loginbad"=>0);
                 $nofail = 1;
                 if(isset($_POST["register"])){
 
@@ -59,10 +60,29 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $nofail=0;
                     }
 
-                    if(!$regfail["pwd"]){
-                        if($regpwd!=$regpwd2){
-                            $regfail["pwd2no"]=1;
+                    if(!$regfail["login"]){
+                        if(!preg_match('/^[a-zA-Z0-9]{5,24}$/', $reglogin)){
+                            $regfail["loginbad"]=1;
                             $nofail=0;
+                        }
+                    }
+
+                    if(!$regfail["email"]){
+                        if(!preg_match('/^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,4}$/', $regemail)){
+                            $regfail["emailbad"]=1;
+                            $nofail=0;
+                        }
+                    }
+
+                    if(!$regfail["pwd"] && !$regfail["pwd2"]){
+                        if(!preg_match('/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/', $regpwd)){
+                            $regfail["pwdbad"]=1;
+                            $nofail=0;
+                        }else{
+                            if($regpwd!=$regpwd2){
+                                $regfail["pwd2no"]=1;
+                                $nofail=0;
+                            }
                         }
                     }
 
@@ -85,6 +105,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $regpwd2 = md5($regpwd2);
 
                         $db_query = mysqli_query($con, "INSERT INTO `users` (`user_id`, `login`, `email`, `password`, `ranga_id`) VALUES (NULL, '$reglogin', '$regemail', '$regpwd', '$regrang');");
+
+                        $success = "Użytkownik został dodany!";
                     }
                 }
                 ?>
@@ -96,17 +118,26 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     if($regfail["login"]){
                         echo "<p>Wprowadź login</p>";
                     }
+                    if($regfail["loginbad"]){
+                        echo "<p>Niepoprawny login (Login musi zawierać od 5-24 znaków</p>";
+                    }
                     if($regfail["loginex"] && !empty($reglogin)){
                         echo "<p>Login jest już zajęty</p>";
                     }
                     if($regfail["email"]){
                         echo "<p>Wprowadź email</p>";
                     }
+                    if($regfail["emailbad"]){
+                        echo "<p>Wprowadź poprawny adres email</p>";
+                    }
                     if($regfail["emailex"] && !empty($regemail)){
                         echo "<p>Email jest już zajęty</p>";
                     }
                     if($regfail["pwd"]){
                         echo "<p>Wprowadź hasło</p>";
+                    }
+                    if($regfail["pwdbad"]){
+                        echo "<p>Niepoprawne hasło (Hasło musi zawierać conajmniej 8 znaków, 1 mała literę, 1 dużą literę oraz 1 znak specjalny lub liczbę)</p>";
                     }
                     if($regfail["pwd2"]){
                         echo "<p>Powtórz hasło</p>";
@@ -119,34 +150,38 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     }
                     echo "</div>";
                 }
+
+                if(!empty($success)){
+                    echo "<div class='alert alert-success'><p>$success</p></div>";
+                }
             ?>
 
         <form class="form-horizontal" action="index.php?goto=register" method="post">
-            <div class='form-group <?php if($regfail["login"]){echo "has-error";} ?> has-feedback'>
+            <div class='form-group <?php if($regfail["login"] || $regfail["loginbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='reglogin'>Login:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login'>
-                    <?php if($regfail["login"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
+                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login' autocomplete="off">
+                    <?php if($regfail["login"]|| $regfail["loginbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
-            <div class='form-group <?php if($regfail["email"]){echo "has-error";} ?> has-feedback'>
+            <div class='form-group <?php if($regfail["email"] || $regfail["emailbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regemail'>Email:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' name='regemail' placeholder='Email'>
-                    <?php if($regfail["email"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
+                    <input type='text' class='form-control' name='regemail' placeholder='Email' autocomplete="off">
+                    <?php if($regfail["email"] || $regfail["emailbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
-            <div class='form-group <?php if($regfail["pwd"]){echo "has-error";} ?> has-feedback'>
+            <div class='form-group <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd'>Hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło'>
-                    <?php if($regfail["pwd"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
+                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło' autocomplete="off">
+                    <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["pwd2"] || $regfail["pwd2no"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd2'>Powtórz hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło'>
+                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło' autocomplete="off">
                     <?php if($regfail["pwd2"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
@@ -170,7 +205,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10 sumb">
                     <input type='hidden' name='register' value="1">
-                    <button type="submit" class="btn btn-default">Prześlij</button>
+                    <button type="submit" class="btn btn-default">Dodaj</button>
                 </div>
             </div>
         </form>

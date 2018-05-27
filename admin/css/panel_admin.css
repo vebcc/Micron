@@ -23,9 +23,6 @@ body{
 .logout{
     float: right;
 }
-#settings{
-
-}
 #settings > h1{
     text-align: center;
     margin-top: 20px;
@@ -37,4 +34,11 @@ body{
 }
 .sumb{
     text-align: center;
+}
+.registerfail{
+    text-align: center;
+}
+.reglink{
+    text-decoration: none;
+    color: inherit;
 }

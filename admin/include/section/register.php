@@ -1,6 +1,7 @@
 <!--@Dodaj klienta@7@-->
 <?php
 if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['token2'])){
+    //TODO: remote addr na funkcje sprawdzajaca 3 pozostale mozliwe adresy ip
     if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){
         $login = $_SESSION['login'];
 ?>
@@ -12,6 +13,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
         if(checkpermission("section", "register")){
             if(checkpermission("register")){
                 $success="";
+                $edituser=0;
 
                 if(isset($_GET["deluser"]) && !empty($_GET["deluser"])){
                     $deluser = htmlspecialchars(stripslashes(strip_tags(trim($_GET["deluser"]))));
@@ -20,7 +22,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 }
 
                 if(isset($_GET["edituser"])){
-                    echo " Aktualnie nic";
+                    $edituser=1;
                     //TODO: Panel edycji usera;
                 }
 
@@ -154,34 +156,35 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 if(!empty($success)){
                     echo "<div class='alert alert-success'><p>$success</p></div>";
                 }
+
             ?>
 
         <form class="form-horizontal" action="index.php?goto=register" method="post">
             <div class='form-group <?php if($regfail["login"] || $regfail["loginbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='reglogin'>Login:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login' autocomplete="off">
+                    <input type='text' class='form-control' id="inputError" name='reglogin' placeholder='Login' value ="<?php if(!$regfail["login"] && !$regfail["loginbad"]){echo $reglogin;} ?>" autocomplete="off">
                     <?php if($regfail["login"]|| $regfail["loginbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["email"] || $regfail["emailbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regemail'>Email:</label>
                 <div class='col-sm-9'>
-                    <input type='text' class='form-control' name='regemail' placeholder='Email' autocomplete="off">
+                    <input type='text' class='form-control' name='regemail' placeholder='Email' value ="<?php if(!$regfail["email"] && !$regfail["emailbad"]){echo $regemail;} ?>"  autocomplete="off">
                     <?php if($regfail["email"] || $regfail["emailbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd'>Hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło' autocomplete="off">
+                    <input type='password' class='form-control' name='regpwd' placeholder='Hasło' value ="<?php if(!$regfail["pwd"] && !$regfail["pwdbad"]){echo $regpwd;} ?>" autocomplete="off">
                     <?php if($regfail["pwd"] || $regfail["pwdbad"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>
             <div class='form-group <?php if($regfail["pwd2"] || $regfail["pwd2no"]){echo "has-error";} ?> has-feedback'>
                 <label class='control-label col-sm-3' for='regpwd2'>Powtórz hasło:</label>
                 <div class='col-sm-9'>
-                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło' autocomplete="off">
+                    <input type='password' class='form-control' name='regpwd2' placeholder='Powtórz hasło' value ="<?php if(!$regfail["pwd2"] && !$regfail["pwd2no"]){echo $regpwd2;} ?>" autocomplete="off">
                     <?php if($regfail["pwd2"]){echo "<span class='glyphicon glyphicon-remove form-control-feedback'></span>";} ?>
                 </div>
             </div>

@@ -46,3 +46,16 @@ body{
     text-align: center;
     margin-top: 20px;
 }
+#groupeditor > h1{
+    text-align: center;
+    margin-top: 20px;
+}
+.kolejnosc{
+    text-align: right;
+}
+.arrowup{
+    text-align: right;
+}
+.delex{
+    text-align: right;
+}

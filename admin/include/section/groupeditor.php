@@ -1,4 +1,5 @@
 <!--@Edytor grup@8@-->
+<!--@-->
 <?php
 if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['token2'])){
     if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){
@@ -163,27 +164,32 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                 </div>
                                 <?php
                                     $db_query = mysqli_query($con, "SELECT section, name, value FROM permissions WHERE group_id=$edgroup;");
+                                    $grnext=0;
                                     while($db_row = mysqli_fetch_assoc($db_query)){
                                         echo "<div class='form-group has-feedback'>
-                                                <label class='control-label col-sm-3' for='edord'>Uprawnienie:</label>
+                                                <label class='control-label col-sm-3' for='edord$grnext'>Uprawnienie:</label>
                                                 <div class='col-sm-9 row'>
                                                     <div class='col-sm-5'>
-                                                        <select id='inputState' class='form-control' name='grsection'>
-                                                            ."loadpermoption("section",$db_row['section'])".
-                                                            <option value='".$db_row['section']."'>".$db_row['section']."</option>
-                                                        </select>
+                                                        <select id='grsection' class='form-control' name='grsection$grnext'><option value=''></option>";
+
+                                                            loadpermoption('section',$db_row['section']);
+
+                                                        echo "</select>
 
                                                     </div>
                                                     <div class='col-sm-5'>
-                                                        <select id='inputState' class='form-control' name='grname'>
-                                                            <option value='".$db_row['name']."'>".$db_row['name']."</option>
-                                                        </select>
+                                                        <select id='inputState' class='form-control' name='grname$grnext'><option value=''></option>";
+
+                                                            loadpermoption('name',$db_row['name'], $db_row['section']);
+
+                                                        echo "</select>
                                                     </div>
                                                     <div class='col-sm-1'>
-                                                        <select id='inputState' class='form-control inpcenter' name='grvalue'>
-                                                            <option value='1'>1</option>
-                                                            <option value='0'>0</option>
-                                                        </select>
+                                                        <select id='inputState' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
+
+                                                            loadpermoption('value',$db_row['value']);
+
+                                                        echo "</select>
                                                     </div>
                                                 </div>
                                             </div>";

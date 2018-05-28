@@ -1,5 +1,46 @@
 <?php
 
+    //pobiera dane z sekcji (nazwy, order, permissje)
+    function getsections(){
+        $directory = 'include/section'; // folder sekcji
+        $includelist = scandir($directory); // wyszukuje wszystkie sekcje
+        global $alink;
+        global $permnamelist;
+        global $con;
+
+        for($i=2;$i<count($includelist);$i++){ // petla konwertujaca wyniki skanu
+            $afile = fopen("include/section/".$includelist[$i],"r"); // otwiera plik
+            $atitle = explode("@", fgets($afile)); // pobiera 1 linijke, dzieli ja @ i zapisuje do tablicy
+
+            $apermission = explode("@", fgets($afile)); // pobiera 2 linijke, dzieli ja @ i zapisuje do tablicy
+            $asection = explode(".", $includelist[$i]); // oddziela .php od nazwy pliku zapisuajc tylko nazwe
+
+            $acount = count($apermission)-1;
+            $z=0;
+            $permnamelist[$asection[0]][$z] = "*";
+            $z++;
+            if($acount==2 && $apermission[1] == "getdb"){
+                echo "no i fajnie: ".$asection[0];
+                $db_query = mysqli_query($con, "SELECT name FROM $asection[0];");
+                $n=1;
+                while($db_row = mysqli_fetch_assoc($db_query)){
+                    $permnamelist[$asection[0]][$n] = $db_row['name'];
+                    $n++;
+                }
+            }else{
+                for($v=1;$v<$acount;$v++){
+                    $permnamelist[$asection[0]][$z] = $apermission[$v];
+                    $z++;
+                }
+            }
+            $permnamelist["section"][$i-1]=$asection[0];
+
+            fclose($afile); // wyjscie z pliku
+            $alink[$i-2] = array($atitle[2], $asection[0], $atitle[1]); // zapisuje przekonwertowane wyniki do tablicy
+        }
+        sort($alink); // sortowanie tablicy zgodnie z ich numeracja w plikach
+    }
+
     // funkcja sprawdzajaca pozwolenia usera
     $permlist = array();
     function checkpermission($section, $name=0){
@@ -77,18 +118,59 @@
         header('Location: ./');
     }
 
-    //przygotowywuje option do formularza
-    function loadpermoption($type, $default=0){
-        if($type="section"){
+    function executepermoptlist(){
+        global $alink;
+        global $permsectionlist;
+        global $permnamelist;
 
-        }else if($type="name"){
-
-        }else if($type="value"){
-
+        $permsectionlist = array();
+        $nperm=0;
+        $permsectionlist[$nperm] = "page";
+        $nperm++;
+        $permsectionlist[$nperm] = "section";
+        $nperm++;
+        foreach($alink as $value){
+            $permsectionlist[$nperm] = $value[1];
+            $nperm++;
         }
 
+        $permnamelist["section"][0]= "*";
+        $permnamelist["page"][0]= "*";
 
-        echo $alopt;
+
+    }
+    //przygotowywuje i wyswietla option do formularza
+    function loadpermoption($type, $default=0, $section=0){
+        global $permsectionlist;
+        global $permnamelist;
+        if($type=="section"){
+            foreach($permsectionlist as $value){
+                if($default!=$value){
+                    echo "<option value='$value'>$value</option>";
+                }else{
+                    echo "<option value='$value' selected>$value</option>";
+                }
+            }
+        }else if($type=="name"){
+            if($section){
+                foreach($permnamelist[$section] as $value){
+                    if($default!=$value){
+                        echo "<option value='$value'>$value</option>";
+                    }else{
+                        echo "<option value='$value' selected>$value</option>";
+                    }
+                }
+            }
+
+        }else if($type=="value"){
+            if($default==1){
+                echo "<option value='1' selected>1</option><option value='0'>0</option>";
+            }else{
+                echo "<option value='1'>1</option><option value='0' selected>0</option>";
+            }
+        }else{
+            echo " nie dziala";
+        }
     }
 
 ?>

@@ -1,4 +1,5 @@
 <!--@Dodaj klienta@7@-->
+<!--@-->
 <?php
 if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['token2'])){
     //TODO: remote addr na funkcje sprawdzajaca 3 pozostale mozliwe adresy ip

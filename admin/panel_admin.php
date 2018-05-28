@@ -6,17 +6,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
         require("include/functions.php"); // include functions.php
 
-        $directory = 'include/section'; // folder sekcji
-        $includelist = scandir($directory); // wyszukuje wszystkie sekcje
-
-        for($i=2;$i<count($includelist);$i++){ // petla konwertujaca wyniki skanu
-            $afile = fopen("include/section/".$includelist[$i],"r"); // otwiera plik
-            $atitle = explode("@", fgets($afile)); // pobiera 1 linijke, dzieli ja @ i zapisuje do tablicy
-            fclose($afile); // wyjscie z pliku
-            $asection = explode(".", $includelist[$i]); // oddziela .php od nazwy pliku zapisuajc tylko nazwe
-            $alink[$i-2] = array($atitle[2], $asection[0], $atitle[1]); // zapisuje przekonwertowane wyniki do tablicy
-        }
-        sort($alink); // sortowanie tablicy zgodnie z ich numeracja w plikach
+        getsections();
+        executepermoptlist();
 ?>
 
 <link rel="stylesheet" href="css/panel_admin.css" type="text/css">

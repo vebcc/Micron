@@ -77,4 +77,18 @@
         header('Location: ./');
     }
 
+    //przygotowywuje option do formularza
+    function loadpermoption($type, $default=0){
+        if($type="section"){
+
+        }else if($type="name"){
+
+        }else if($type="value"){
+
+        }
+
+
+        echo $alopt;
+    }
+
 ?>

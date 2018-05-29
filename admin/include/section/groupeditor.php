@@ -170,7 +170,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                 <label class='control-label col-sm-3' for='edord$grnext'>Uprawnienie:</label>
                                                 <div class='col-sm-9 row'>
                                                     <div class='col-sm-5'>
-                                                        <select id='grsection' class='form-control' name='grsection$grnext'><option value=''></option>";
+                                                        <select id='grsection' class='form-control selectormanager' name='grsection$grnext'><option value=''></option>";
 
                                                             loadpermoption('section',$db_row['section']);
 
@@ -200,7 +200,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                             <label class='control-label col-sm-3' for='edord$grnext'>Uprawnienie:</label>
                                                 <div class='col-sm-9 row'>
                                                     <div class='col-sm-5'>
-                                                        <select id='grsection' class='form-control' name='grsection$grnext'><option value=''></option>";
+                                                        <select id='grsection' class='form-control selectormanager' name='grsection$grnext'><option value=''></option>";
                                                             loadpermoption('section',"null");
                                                     echo "</select>
                                                     </div>

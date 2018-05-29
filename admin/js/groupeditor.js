@@ -21,6 +21,7 @@ function getnext(kol){
             document.getElementsByName('grsection'+(zero-1))[1].name = "grsection"+kol; // pobiera z nowego diva z option parametr name i go podmienia
             document.getElementsByName('grname'+(zero-1))[1].name = "grname"+kol;
             document.getElementsByName('grvalue'+(zero-1))[1].name = "grvalue"+kol;
+            createfocus(kol);
             kol++; // dodaje jeden by zaczac nasluchiwac drugi
             x = false;
             getnext(kol); // odpala funkcje
@@ -30,13 +31,29 @@ function getnext(kol){
 }
 
 function createfocus(who){
-    //document.getElementsByName('grsection'+who)[0].onfocus = function cf(){
-
-    //}
+    document.getElementsByName('grsection'+who)[0].onchange = function cf(){
+        let avalue = document.getElementsByName('grsection'+who)[0].value
+        //console.log(avalue);
+        var printer ="";
+        for(var i = 0;i<permnamelist[avalue].length;i++){
+            printer+="<option value='"+permnamelist[avalue][i]+"'>"+permnamelist[avalue][i]+"</option>";
+            //console.log(printer);
+        }
+        document.getElementsByName('grname'+who)[0].innerHTML = printer;
+        //<option value='$value'>$value</option>
+    }
 
 }
 
+function starterpack(){
+    let ilosc = document.getElementsByClassName('selectormanager').length
+    for(var z=0;z<ilosc;z++){
+        createfocus(z);
+    }
+
+}
 
 getnext(next);
 
-//createfocus();
+starterpack();
+//createfocus(0);

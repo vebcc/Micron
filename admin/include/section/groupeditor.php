@@ -47,7 +47,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     $db_query = mysqli_query($con, "DELETE FROM groups WHERE groups.id_rangi=$delgroup");
                     $db_query = mysqli_query($con, "SELECT id_rangi, nazwa, ord FROM groups WHERE ord>$edord ORDER BY ord");
                     while($db_row = mysqli_fetch_assoc($db_query)){
-                        $db_query_inc = mysqli_query($con, "UPDATE groups SET ord = ord-s1 WHERE groups.id_rangi =".$db_row['id_rangi']);
+                        $db_query_inc = mysqli_query($con, "UPDATE groups SET ord = ord-1 WHERE groups.id_rangi =".$db_row['id_rangi']);
                     }
                     $success = "Grupa została usunięta!";
                 }
@@ -178,14 +178,14 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
                                                     </div>
                                                     <div class='col-sm-5'>
-                                                        <select id='inputState' class='form-control' name='grname$grnext'><option value=''></option>";
+                                                        <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
 
                                                             loadpermoption('name',$db_row['name'], $db_row['section']);
 
                                                         echo "</select>
                                                     </div>
                                                     <div class='col-sm-1'>
-                                                        <select id='inputState' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
+                                                        <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
 
                                                             loadpermoption('value',$db_row['value']);
 
@@ -193,8 +193,38 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                     </div>
                                                 </div>
                                             </div>";
-                                    }
+                                        $grnext++;
+                                }
+                                    echo "<div id='zeroinput'>
+                                            <div class='form-group has-feedback'>
+                                            <label class='control-label col-sm-3' for='edord$grnext'>Uprawnienie:</label>
+                                                <div class='col-sm-9 row'>
+                                                    <div class='col-sm-5'>
+                                                        <select id='grsection' class='form-control' name='grsection$grnext'><option value=''></option>";
+                                                            loadpermoption('section',0);
+                                                    echo "</select>
+                                                    </div>
+                                                    <div class='col-sm-5'>
+                                                        <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
+                                                            loadpermoption('name',0);
+                                                    echo "</select>
+                                                    </div>
+                                                    <div class='col-sm-1'>
+                                                        <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
+                                                            loadpermoption('value',1);
+                                                    echo "</select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>";
+
+
+                                    $grnext++;
+                                    echo "<span id='grnext'>$grnext</span>";
                                 ?>
+                                <div id="allinput">
+
+                                </div>
 
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10 sumb">
@@ -203,6 +233,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                     </div>
                                 </div>
                             </form>
+                            <script src="js/groupeditor.js"></script>
 
 
                         <?php

@@ -62,3 +62,6 @@ body{
 .inpcenter{
     width: auto;
 }
+#grnext{
+    display: none;
+}

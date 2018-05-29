@@ -7,7 +7,7 @@ function getnext(kol){
     document.getElementsByName('grsection'+(kol-1))[0].onfocus = function f(){ // nasluchuje nad ostatnia sekcja
 
         if(x){
-            console.log('grsection'+(kol-1));
+            //console.log('grsection'+(kol-1));
             //var moreinput = document.getElementById('moreinput').innerHTML; // div w ktorym beda wszystkie nastepne sekcje
             let zeroinput = document.getElementById('zeroinput').innerHTML; // div z defaultowa sekcja ktora bedzie wklejana
             if(first){
@@ -29,6 +29,14 @@ function getnext(kol){
     };
 }
 
+function createfocus(who){
+    //document.getElementsByName('grsection'+who)[0].onfocus = function cf(){
+
+    //}
+
+}
+
 
 getnext(next);
 
+//createfocus();

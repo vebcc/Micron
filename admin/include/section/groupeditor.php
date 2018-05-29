@@ -201,12 +201,12 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                 <div class='col-sm-9 row'>
                                                     <div class='col-sm-5'>
                                                         <select id='grsection' class='form-control' name='grsection$grnext'><option value=''></option>";
-                                                            loadpermoption('section',0);
+                                                            loadpermoption('section',"null");
                                                     echo "</select>
                                                     </div>
                                                     <div class='col-sm-5'>
                                                         <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
-                                                            loadpermoption('name',0);
+                                                            loadpermoption('name',"null");
                                                     echo "</select>
                                                     </div>
                                                     <div class='col-sm-1'>
@@ -233,6 +233,19 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                     </div>
                                 </div>
                             </form>
+                            <script>
+                                var permnamelist = new Array;
+                                <?php
+                                    foreach($permnamelist as $key => $value){
+                                        foreach($permnamelist[$key] as $key2 => $value2){
+                                            echo "if(!permnamelist['$key']){ permnamelist['$key']= new Array;}
+                                            ";
+                                            echo "permnamelist['$key'][$key2]='$value2';
+                                            ";
+                                        }
+                                    }
+                                ?>
+                            </script>
                             <script src="js/groupeditor.js"></script>
 
 

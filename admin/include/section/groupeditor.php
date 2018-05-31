@@ -25,6 +25,22 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 $success="";
                 $error="";
 
+                //TODO: ograniczenia nazwy 4-24 litery;
+                //TODO: sekcje wykonujaca edycje grupy;
+
+                if(isset($_POST["editgroup"]) && !empty($_POST["editgroup"]) && !empty($_POST["edgr"])){
+                    $edgr = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgr"]))));
+                    $edname = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroup"]))));
+                    $ednameo = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroupo"]))));
+                    if($edname!=$ednameo){
+                        // update group name
+                    }
+
+
+
+
+                }
+
                 if(isset($_POST["addgroup"]) && !empty($_POST["addgroup"])&& !empty($_POST["edgroup"])){
                     $edgroup = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroup"]))));
                     $edord = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edord"]))));
@@ -160,6 +176,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                     <label class='control-label col-sm-3' for='edgroup'>Nazwa grupy:</label>
                                     <div class='col-sm-9'>
                                         <input type='text' class='form-control' id="inputError" name='edgroup' value="<?php echo $edname ?>" placeholder='Nazwa grupy' autocomplete="off">
+                                        <input type='hidden' name='edgroupo' value="<?php echo $edname ?>">
                                     </div>
                                 </div>
                                 <?php
@@ -175,7 +192,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('section',$db_row['section']);
 
                                                         echo "</select>
-
+                                                        <input type='hidden' name='grsectiono' value='$grnext'>
                                                     </div>
                                                     <div class='col-sm-5'>
                                                         <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
@@ -183,6 +200,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('name',$db_row['name'], $db_row['section']);
 
                                                         echo "</select>
+                                                        <input type='hidden' name='grnameo' value='$grnext'>
                                                     </div>
                                                     <div class='col-sm-1'>
                                                         <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
@@ -190,6 +208,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('value',$db_row['value']);
 
                                                         echo "</select>
+                                                        <input type='hidden' name='grvalue' value='$grnext'>
                                                     </div>
                                                 </div>
                                             </div>";
@@ -228,7 +247,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10 sumb">
-                                        <input type='hidden' name='addgroup' value="1">
+                                        <input type='hidden' name='editgroup' value="1">
                                         <button type="submit" class="btn btn-default">Dodaj</button>
                                     </div>
                                 </div>

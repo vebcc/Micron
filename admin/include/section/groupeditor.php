@@ -26,18 +26,33 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 $error="";
 
                 //TODO: ograniczenia nazwy 4-24 litery;
-                //TODO: sekcje wykonujaca edycje grupy;
+                //TODO: zabezpieczac posty tam trim stripstags etc na kazdym mozliwym
+                //TODO: error logi z wykonywania i success logi
+                //TODO: js error kiedy grsection is empty
 
                 if(isset($_POST["editgroup"]) && !empty($_POST["editgroup"]) && !empty($_POST["edgr"])){
                     $edgr = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgr"]))));
                     $edname = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroup"]))));
                     $ednameo = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroupo"]))));
                     if($edname!=$ednameo){
-                        // update group name
+                        $db_query = mysqli_query($con, "UPDATE groups SET nazwa = '$edname' WHERE groups.id_rangi = $edgr;");
                     }
-
-
-
+                    $permcount = (count($_POST)-5)/6;
+                    //echo "permcount: $permcount";
+                    for($i=0;$i<$permcount;$i++){
+                        if(!empty($_POST["grsection$i"]) && !empty($_POST["grname$i"]) && !empty($_POST["grvalue$i"])){
+                            if($_POST["grsection$i"]!=$_POST["grsectiono$i"] || $_POST["grname$i"]!=$_POST["grnameo$i"] || $_POST["grvalue$i"]!=$_POST["grvalueo$i"]){
+                                if($i<$_POST["howold"]){
+                                    $db_query = mysqli_query($con, "UPDATE permissions SET section ='".$_POST["grsection$i"]."', name ='".$_POST["grname$i"]."', value ='".$_POST["grvalue$i"]."' WHERE permissions.id = ".$_POST["grid$i"].";");
+                                }else{
+                                    $db_query = mysqli_query($con, "INSERT INTO permissions (id, group_id, section, name, value) VALUES (NULL, '$edgr', '".$_POST["grsection$i"]."', '".$_POST["grname$i"]."', '".$_POST["grvalue$i"]."');");
+                                }
+                            }
+                        }
+                        if(empty($_POST["grsection$i"]) && empty($_POST["grname$i"]) && $i<$_POST["howold"]){
+                            $db_query = mysqli_query($con, "DELETE FROM permissions WHERE permissions.id = ".$_POST["grid$i"].";");
+                        }
+                    }
 
                 }
 
@@ -165,7 +180,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $db_row = mysqli_fetch_assoc($db_query);
                         $edname = $db_row["nazwa"];
                         ?>
-                            <form class="form-horizontal" action="index.php?goto=groupeditor" method="post">
+                            <form class="form-horizontal" action="index.php?goto=groupeditor&groupeditor=2" method="post">
                                 <div class='form-group has-feedback'>
                                     <label class='control-label col-sm-3' for='edgroup'>ID grupy:</label>
                                     <div class='col-sm-9'>
@@ -180,7 +195,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                     </div>
                                 </div>
                                 <?php
-                                    $db_query = mysqli_query($con, "SELECT section, name, value FROM permissions WHERE group_id=$edgroup;");
+                                    $db_query = mysqli_query($con, "SELECT id, section, name, value FROM permissions WHERE group_id=$edgroup;");
                                     $grnext=0;
                                     while($db_row = mysqli_fetch_assoc($db_query)){
                                         echo "<div class='form-group has-feedback'>
@@ -192,7 +207,9 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('section',$db_row['section']);
 
                                                         echo "</select>
-                                                        <input type='hidden' name='grsectiono' value='$grnext'>
+                                                        <input type='hidden' name='grsectiono$grnext' value='".$db_row['section']."'>
+                                                        <input type='hidden' name='grid$grnext' value='".$db_row['id']."'>
+
                                                     </div>
                                                     <div class='col-sm-5'>
                                                         <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
@@ -200,7 +217,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('name',$db_row['name'], $db_row['section']);
 
                                                         echo "</select>
-                                                        <input type='hidden' name='grnameo' value='$grnext'>
+                                                        <input type='hidden' name='grnameo$grnext' value='".$db_row['name']."'>
                                                     </div>
                                                     <div class='col-sm-1'>
                                                         <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
@@ -208,7 +225,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                             loadpermoption('value',$db_row['value']);
 
                                                         echo "</select>
-                                                        <input type='hidden' name='grvalue' value='$grnext'>
+                                                        <input type='hidden' name='grvalueo$grnext' value='".$db_row['value']."'>
                                                     </div>
                                                 </div>
                                             </div>";
@@ -222,16 +239,19 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                         <select id='grsection' class='form-control selectormanager' name='grsection$grnext'><option value=''></option>";
                                                             loadpermoption('section',"null");
                                                     echo "</select>
+                                                    <input type='hidden' name='grsectiono$grnext' value=''>
                                                     </div>
                                                     <div class='col-sm-5'>
                                                         <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
                                                             loadpermoption('name',"null");
                                                     echo "</select>
+                                                    <input type='hidden' name='grnameo$grnext' value=''>
                                                     </div>
                                                     <div class='col-sm-1'>
                                                         <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
                                                             loadpermoption('value',1);
                                                     echo "</select>
+                                                    <input type='hidden' name='grvalue$grnext' value='1'>
                                                     </div>
                                                 </div>
                                             </div>
@@ -248,6 +268,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10 sumb">
                                         <input type='hidden' name='editgroup' value="1">
+                                        <input type='hidden' name='howold' value='<?php echo $grnext-1; ?>'>
                                         <button type="submit" class="btn btn-default">Dodaj</button>
                                     </div>
                                 </div>

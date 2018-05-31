@@ -21,6 +21,7 @@ function getnext(kol){
             document.getElementsByName('grsection'+(zero-1))[1].name = "grsection"+kol; // pobiera z nowego diva z option parametr name i go podmienia
             document.getElementsByName('grname'+(zero-1))[1].name = "grname"+kol;
             document.getElementsByName('grvalue'+(zero-1))[1].name = "grvalue"+kol;
+            document.getElementsByName('grsectiono'+(zero-1))[1].name = "grsectiono"+kol;
             createfocus(kol);
             kol++; // dodaje jeden by zaczac nasluchiwac drugi
             x = false;

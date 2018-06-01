@@ -25,35 +25,59 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 $success="";
                 $error="";
 
-                //TODO: ograniczenia nazwy 4-24 litery;
-                //TODO: zabezpieczac posty tam trim stripstags etc na kazdym mozliwym
                 //TODO: error logi z wykonywania i success logi
-                //TODO: js error kiedy grsection is empty
 
                 if(isset($_POST["editgroup"]) && !empty($_POST["editgroup"]) && !empty($_POST["edgr"])){
                     $edgr = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgr"]))));
                     $edname = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroup"]))));
                     $ednameo = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgroupo"]))));
-                    if($edname!=$ednameo){
-                        $db_query = mysqli_query($con, "UPDATE groups SET nazwa = '$edname' WHERE groups.id_rangi = $edgr;");
+                    $howold = $_POST["howold"];
+                    //TODO: howold niebezpieczny;
+                    if(preg_match('/^[a-zA-Z0-9]{5,24}$/', $edname)){
+                        if($edname!=$ednameo){
+                            $db_query = mysqli_query($con, "UPDATE groups SET nazwa = '$edname' WHERE groups.id_rangi = $edgr;");
+                            if($db_query){
+                                $success .= "Nazwa grupy została zmieniona <br>";
+                            }
+                        }
+                    }else{
+                        $error .= "Błędna nazwa(Nazwa od 5-24 znaków a-Z, 0-9 <br>";
                     }
-                    $permcount = (count($_POST)-5)/6;
-                    //echo "permcount: $permcount";
-                    for($i=0;$i<$permcount;$i++){
-                        if(!empty($_POST["grsection$i"]) && !empty($_POST["grname$i"]) && !empty($_POST["grvalue$i"])){
-                            if($_POST["grsection$i"]!=$_POST["grsectiono$i"] || $_POST["grname$i"]!=$_POST["grnameo$i"] || $_POST["grvalue$i"]!=$_POST["grvalueo$i"]){
-                                if($i<$_POST["howold"]){
-                                    $db_query = mysqli_query($con, "UPDATE permissions SET section ='".$_POST["grsection$i"]."', name ='".$_POST["grname$i"]."', value ='".$_POST["grvalue$i"]."' WHERE permissions.id = ".$_POST["grid$i"].";");
+                    $permcount = (count($_POST)-5-$howold)/6;
+                    //FIXME: permocunt zle dziala podaje ulamki?!
+                    //echo "permcount: $permcount<br>";
+                    //echo "howold: $howold<br>";
+                    for($i=0;$i<$permcount-1;$i++){
+                        //FIXME: TU SIE COS PIERDOLI Z WSTAWIANIEM DODATKOWYCH daje sie tylko 1
+                        $grsection = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grsection$i"]))));
+                        $grname = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grname$i"]))));
+                        $grvalue = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grvalue$i"]))));
+                        if(isset($_POST["grid$i"])){
+                            $grid = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grid$i"]))));
+                        }
+                        //echo "dd:$i ";
+                        if(!empty($grsection) && !empty($grname) && !empty($grvalue)){
+
+                            $grsectiono = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grsectiono$i"]))));
+                            $grnameo = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grnameo$i"]))));
+                            $grvalueo = htmlspecialchars(stripslashes(strip_tags(trim($_POST["grvalueo$i"]))));
+                            //echo "bb:$i ";
+                            if($grsection!=$grsectiono || $grname!=$grnameo || $grvalue!=$grvalueo){
+                                //echo "ww:$i ";
+                                if($i<$howold){
+                                    $db_query = mysqli_query($con, "UPDATE permissions SET section ='$grsection', name ='$grname', value ='$grvalue' WHERE permissions.id = $grid;");
                                 }else{
-                                    $db_query = mysqli_query($con, "INSERT INTO permissions (id, group_id, section, name, value) VALUES (NULL, '$edgr', '".$_POST["grsection$i"]."', '".$_POST["grname$i"]."', '".$_POST["grvalue$i"]."');");
+                                    $db_query = mysqli_query($con, "INSERT INTO permissions (id, group_id, section, name, value) VALUES (NULL, '$edgr', '$grsection', '$grname', '$grvalue');");
+                                    //echo "tt:$i ";
                                 }
                             }
                         }
-                        if(empty($_POST["grsection$i"]) && empty($_POST["grname$i"]) && $i<$_POST["howold"]){
-                            $db_query = mysqli_query($con, "DELETE FROM permissions WHERE permissions.id = ".$_POST["grid$i"].";");
+                        if(empty($grsection) && empty($grname) && $i<$howold){
+                            $db_query = mysqli_query($con, "DELETE FROM permissions WHERE permissions.id = $grid;");
                         }
                     }
-
+                    $success .= "Permissje zostały edytowane <br>";
+                    //TODO: poprawic succes wyswietla sie nawet jak nic sie nie zmieni!
                 }
 
                 if(isset($_POST["addgroup"]) && !empty($_POST["addgroup"])&& !empty($_POST["edgroup"])){
@@ -67,7 +91,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     $edord++;
 
                     $db_query = mysqli_query($con, "INSERT INTO `groups` (`id_rangi`, `nazwa`, `ord`) VALUES (NULL, '$edgroup', '$edord')");
-                    $success = "Grupa została dodana!";
+                    $success = "Grupa została dodana! <br>";
                 }
 
                 if(isset($_GET["delgroup"]) && !empty($_GET["delgroup"])){
@@ -80,7 +104,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                     while($db_row = mysqli_fetch_assoc($db_query)){
                         $db_query_inc = mysqli_query($con, "UPDATE groups SET ord = ord-1 WHERE groups.id_rangi =".$db_row['id_rangi']);
                     }
-                    $success = "Grupa została usunięta!";
+                    $success = "Grupa została usunięta! <br>";
+                    //TODO: usuwanie uprawnieni po usunieciu danej grupy;
                 }
 
                 if(isset($_GET["groupmove"]) && !empty($_GET["groupmove"]) && !empty($_GET["groupwhere"])){
@@ -93,9 +118,9 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $db_query2 = mysqli_query($con, "UPDATE groups SET ord = ord+1 WHERE groups.id_rangi =$groupmove AND groups.ord<((SELECT MAX(ord) FROM (select * from groups) AS gr2));");
                         $db_query1 = mysqli_query($con, "UPDATE groups SET ord = ord-1 WHERE groups.id_rangi =$nextgroup");
                         if($db_query1){
-                            $success = "Grupa została przeniesiona w dół!";
+                            $success = "Grupa została przeniesiona w dół! <br>";
                         }else{
-                            $error = "Nie udało się przenieść grupy w dół!";
+                            $error = "Nie udało się przenieść grupy w dół! <br>";
                         }
                     }else if($groupwhere=="up"){
                         $db_query = mysqli_query($con, "SELECT groups.id_rangi FROM groups WHERE groups.ord=(SELECT groups.ord FROM groups WHERE groups.id_rangi=$groupmove)-1");
@@ -104,9 +129,9 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $db_query1 = mysqli_query($con, "UPDATE groups SET ord = ord-1 WHERE groups.id_rangi =$groupmove AND groups.ord!=1;");
                         $db_query2 = mysqli_query($con, "UPDATE groups SET ord = ord+1 WHERE groups.id_rangi =$nextgroup;");
                         if($db_query2){
-                            $success = "Grupa została przeniesiona w górę!";
+                            $success = "Grupa została przeniesiona w górę! <br>";
                         }else{
-                            $error = "Nie udało się przenieść grupy w górę!";
+                            $error = "Nie udało się przenieść grupy w górę! <br>";
                         }
                     }
                 }
@@ -180,7 +205,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                         $db_row = mysqli_fetch_assoc($db_query);
                         $edname = $db_row["nazwa"];
                         ?>
-                            <form class="form-horizontal" action="index.php?goto=groupeditor&groupeditor=2" method="post">
+                            <form class="form-horizontal" action="index.php?goto=groupeditor&groupeditor=<?php echo $edgroup; ?>" method="post">
                                 <div class='form-group has-feedback'>
                                     <label class='control-label col-sm-3' for='edgroup'>ID grupy:</label>
                                     <div class='col-sm-9'>
@@ -239,19 +264,19 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                                                         <select id='grsection' class='form-control selectormanager' name='grsection$grnext'><option value=''></option>";
                                                             loadpermoption('section',"null");
                                                     echo "</select>
-                                                    <input type='hidden' name='grsectiono$grnext' value=''>
+                                                    <input type='hidden' name='grsectiono$grnext' value=' '>
                                                     </div>
                                                     <div class='col-sm-5'>
                                                         <select id='grname' class='form-control' name='grname$grnext'><option value=''></option>";
                                                             loadpermoption('name',"null");
                                                     echo "</select>
-                                                    <input type='hidden' name='grnameo$grnext' value=''>
+                                                    <input type='hidden' name='grnameo$grnext' value=' '>
                                                     </div>
                                                     <div class='col-sm-1'>
                                                         <select id='grvalue' class='form-control inpcenter' name='grvalue$grnext'><option value=''></option>";
                                                             loadpermoption('value',1);
                                                     echo "</select>
-                                                    <input type='hidden' name='grvalue$grnext' value='1'>
+                                                    <input type='hidden' name='grvalueo$grnext' value='1'>
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,12 +301,14 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                             <script>
                                 var permnamelist = new Array;
                                 <?php
+                                    $lastkey = "";
                                     foreach($permnamelist as $key => $value){
                                         foreach($permnamelist[$key] as $key2 => $value2){
-                                            echo "if(!permnamelist['$key']){ permnamelist['$key']= new Array;}
-                                            ";
-                                            echo "permnamelist['$key'][$key2]='$value2';
-                                            ";
+                                            if($key!=$lastkey){
+                                                echo "permnamelist['$key']= new Array; ";
+                                                $lastkey = $key;
+                                            }
+                                            echo "permnamelist['$key'][$key2]='$value2'; ";
                                         }
                                     }
                                 ?>

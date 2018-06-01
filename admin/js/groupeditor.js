@@ -22,6 +22,8 @@ function getnext(kol){
             document.getElementsByName('grname'+(zero-1))[1].name = "grname"+kol;
             document.getElementsByName('grvalue'+(zero-1))[1].name = "grvalue"+kol;
             document.getElementsByName('grsectiono'+(zero-1))[1].name = "grsectiono"+kol;
+            document.getElementsByName('grnameo'+(zero-1))[1].name = "grnameo"+kol;
+            document.getElementsByName('grvalueo'+(zero-1))[1].name = "grvalueo"+kol;
             createfocus(kol);
             kol++; // dodaje jeden by zaczac nasluchiwac drugi
             x = false;
@@ -36,9 +38,13 @@ function createfocus(who){
         let avalue = document.getElementsByName('grsection'+who)[0].value
         //console.log(avalue);
         var printer ="";
-        for(var i = 0;i<permnamelist[avalue].length;i++){
-            printer+="<option value='"+permnamelist[avalue][i]+"'>"+permnamelist[avalue][i]+"</option>";
-            //console.log(printer);
+        if(permnamelist[avalue]){
+            for(var i = 0;i<permnamelist[avalue].length;i++){
+                printer+="<option value='"+permnamelist[avalue][i]+"'>"+permnamelist[avalue][i]+"</option>";
+                //console.log(printer);
+            }
+        }else{
+            printer+="<option value=''></option>";
         }
         document.getElementsByName('grname'+who)[0].innerHTML = printer;
         //<option value='$value'>$value</option>

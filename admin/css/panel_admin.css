@@ -50,6 +50,14 @@ body{
     text-align: center;
     margin-top: 20px;
 }
+#errorlog > h1{
+    text-align: center;
+    margin-top: 20px;
+}
+#menu > h1{
+    text-align: center;
+    margin-top: 20px;
+}
 .kolejnosc{
     text-align: right;
 }
@@ -64,4 +72,7 @@ body{
 }
 #grnext{
     display: none;
+}
+.menuinput{
+    width: 100%;
 }

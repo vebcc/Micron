@@ -26,6 +26,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
                 $error="";
 
                 //TODO: error logi z wykonywania i success logi
+                // Sprawdzanie czy  grupa juz istnieje
+                // sprawdzanie czy uprawnienie juz istnieje
 
                 if(isset($_POST["editgroup"]) && !empty($_POST["editgroup"]) && !empty($_POST["edgr"])){
                     $edgr = htmlspecialchars(stripslashes(strip_tags(trim($_POST["edgr"]))));

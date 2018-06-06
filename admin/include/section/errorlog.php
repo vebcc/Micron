@@ -9,8 +9,10 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 <div id="errorlog">
     <h1>Logi</h1>
     <?php
-        if(checkpermission("section", "groupeditor")){
-            if(checkpermission("groupeditor")){
+        //TODO: usuwanie logow
+        //TODO: uprawnienia do all lub np tylko do przegladania logow
+        if(checkpermission("section", "errorlog")){
+            if(checkpermission("errorlog")){
                 ?>
                 <table class='table table-striped'>
                     <tr><th>ID</th><th>Error</th><th>IP</th><th>Data</th><th>UserAgent</th></tr>

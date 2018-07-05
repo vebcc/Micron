@@ -8,9 +8,26 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
 
 <div id="generator">
 
+    <h1>Generator wkładek</h1>
     <?php
+        if(checkpermission("section", "generator")){
+            if(checkpermission("generator")){
+    ?>
+                <table class='table table-striped'>
+                    <tr><th>ID</th><th>Nazwa</th><th>Wartość</th><th>Usuń</th></tr>
+    <?php
+                    $db_query = mysqli_query($con, "SELECT id, name, value FROM generator ORDER BY id DESC");
+                while($db_row = mysqli_fetch_assoc($db_query)){
+
+                    echo "<tr class=''><td>".$db_row['id']."</td><td>".$db_row['name']."</td><td>".$db_row['value']."</td><td class='delex'><a href='index.php?goto=groupeditor&delgroup=".$db_row['id']."' class='reglink'><span class='glyphicon glyphicon-remove'></span></a></td></tr>";
+
+                }
+                echo "</table>";
 
 
+
+            }
+        }
     ?>
 
 </div>
@@ -28,4 +45,3 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
     header('Location: ./');
 }
 ?>
-Generator wkładek

@@ -1,5 +1,5 @@
-<!--@Wstaw post@2@-->
-<!--@addpost@-->
+<!--@Dodaj przedmiot@10@-->
+<!--@-->
 <?php
 if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
     $actual_ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -13,8 +13,8 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
         $login = $_SESSION['login'];
 ?>
 
-<div id="addpost">
-    <h1>Wstaw post</h1>
+<div id="additem">
+<h1>Dodaj Przedmiot</h1>
         <?php
         if(checkpermission("section", "addpost")){
             if(checkpermission("addpost")){
@@ -89,3 +89,4 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
     header('Location: ./');
 }
 ?>
+Dodaj przedmiot

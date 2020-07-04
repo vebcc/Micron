@@ -1,3 +1,6 @@
+<?php
+session_start(); // start sesji
+?>
 <html lang="pl">
     <head>
         <title>Panel Admina - Micron</title>
@@ -6,8 +9,8 @@
         <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" crossorigin="anonymous">
 
         <?php
-        set_include_path(get_include_path() . PATH_SEPARATOR . 'D:\Pliki\Git');
-        session_start(); // start sesji
+        //set_include_path(get_include_path() . PATH_SEPARATOR . 'D:\Pliki\Git');
+        //session_start(); // start sesji
 
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $actual_ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -67,12 +70,14 @@
 
                             $logem = htmlspecialchars(stripslashes(strip_tags(trim($_POST["logem"])))); //pobieranie i sprawdzanie loginu/emailu
                             $pwd = htmlspecialchars(stripslashes(strip_tags(trim($_POST["pwd"])))); // pobieranie i sprawdzanie hasla
-
+                            
+                            //echo $logem;
+                            //echo $pwd;
                             $pwd = md5($pwd); // hashowanie hasla
-
+                            //echo "md5: ".$pwd;
                             //zapytanie pobierajace  haslo dla danego emaila lub loginu
                             $db_query = mysqli_query($con,"SELECT users.login, users.email, users.password FROM users WHERE users.login='$logem' OR users.email='$logem';");
-
+                            
                             $db_row = mysqli_fetch_assoc($db_query);
 
                             if($pwd == $db_row["password"]){ // czy hasla sie zgadzaja
@@ -81,13 +86,15 @@
                                 $_SESSION["login"] = $login; // zapis loginu do sesji
                                 $_SESSION['token'] = md5($_SERVER['HTTP_USER_AGENT']); // zapis user agent do sesji w md5
                                 $_SESSION['token2'] = md5($actual_ip); // zapis ip klienta do sesji w md5
-                                header('Location: ./'); // przeniesienie zalogowanego klienta na strone glowna (refresh)
+                                $_SESSION['token3'] = $actual_ip; // zapis ip klienta do sesji w md5
+                                //header('Location: ./'); // przeniesienie zalogowanego klienta na strone glowna (refresh)
                             }else{
                                 $error = "Zły login lub hasło!"; // wyslanie erroru o blednym hasle
+                                echo "test";
 
                                 //funkcja wprowadzajaca blad o blednym logowaniu (bledny login lub haslo)
-                                $db_query = mysqli_query($con,"INSERT INTO `micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'faillogin', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
-
+                                $db_query = mysqli_query($con,"INSERT INTO `Micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'faillogin', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
+                                echo "test";
                                 // zapytanie sprawdzajace ile banow w ciagu ostatnich 10 min dostal klient o danym ip
                                 $db_query = mysqli_query($con,"SELECT COUNT(*) AS ilosc FROM fail_login_ban WHERE ip='$actual_ip' AND fail_login_ban.error='faillogin' AND fail_login_ban.date >= DATE_ADD(now(), INTERVAL -10 MINUTE);");
                                 $db_row = mysqli_fetch_assoc($db_query);
@@ -96,8 +103,8 @@
                                 if($db_row["ilosc"]>=3){ // sprawdzanie czy klient o danym ip dostal juz 3 bany w ciagu 10 minut
                                     // jesli tak
                                     // funkcja dodajaca bana do bazy
-                                    $db_query = mysqli_query($con,"INSERT INTO `micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'loginban', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
-                                    header('Location: ./'); // przeniesienie klienta na strone glowna (refresh)
+                                    $db_query = mysqli_query($con,"INSERT INTO `Micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'loginban', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
+                                    //header('Location: ./'); // przeniesienie klienta na strone glowna (refresh)
                                 }
                             }
                         }else{
@@ -120,8 +127,16 @@
                 }
                 require("login.php"); // include formularza logowania
             }else{
-                if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){ // sprawdzanie czy dane z sesji zgadzaja sie z danymi klienta
+                echo $_SESSION['token2'];
+                echo "<br>";
+                echo md5($actual_ip);
+                //echo "<br>";
+                //echo $_SESSION['token3'];
+                //echo "<br>";
+                //echo $actual_ip;
+                if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($actual_ip)){ // sprawdzanie czy dane z sesji zgadzaja sie z danymi klienta
                     $login = $_SESSION['login'];
+                    //echo "include";
                     require("panel_admin.php"); // include panel admina
                 }else{
                     $error = "Zaloguj się ponownie!"; // error przez inne dane sesji i klienta (moze blad moze próba ataku sesji)
@@ -132,7 +147,7 @@
             unset($_SESSION['error']); // usuniecie zmiennej error z sesji
 
             // dodanie do bazy informacji o probie ingerencji przez wejscie w inne pliki niz index.php (rownoznaczne z perm banem)
-            $db_query = mysqli_query($con,"INSERT INTO `micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'interference', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
+            $db_query = mysqli_query($con,"INSERT INTO `Micron`.`fail_login_ban` (`id`, `error`, `ip`, `date`, `browser`) VALUES (NULL, 'interference', '$actual_ip', CURRENT_TIMESTAMP, '".$_SERVER['HTTP_USER_AGENT']."');");
 
             require("login.php"); // include formularza logowania
         }

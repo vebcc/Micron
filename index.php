@@ -10,5 +10,4 @@
     require( 'include/template-loader.php' );
 
     require( 'include/end.php' );
-
 ?>

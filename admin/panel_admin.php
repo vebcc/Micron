@@ -1,6 +1,13 @@
 <?php
+if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    $actual_ip = $_SERVER['HTTP_CLIENT_IP'];
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $actual_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} else {
+    $actual_ip = $_SERVER['REMOTE_ADDR'];
+}
 if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['token2'])){ // sprawdza czy zmienne sesji sa ustawione
-    if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($_SERVER['REMOTE_ADDR'])){ // sprawdza czy zmienne sesji sa zgodne z danymi klienta
+    if($_SESSION['token']==md5($_SERVER['HTTP_USER_AGENT']) && $_SESSION['token2']==md5($actual_ip)){ // sprawdza czy zmienne sesji sa zgodne z danymi klienta
         $login = $_SESSION['login'];
         echo "Siemka zalogowany $login!";
 
@@ -70,7 +77,7 @@ if(isset($_SESSION['token']) && isset($_SESSION['login']) && isset($_SESSION['to
         }
 
     }else{
-        $error = "Zaloguj się ponownie!"; // przeslanie bledu logowania
+        $error = "Zaloguj się ponownie! (PA)"; // przeslanie bledu logowania
         require("login.php"); // wyswietlenie formularza logowania
     }
 }else{

@@ -27,6 +27,10 @@ body{
     text-align: center;
     margin-top: 20px;
 }
+#addpost > h1{
+    text-align: center;
+    margin-top: 20px;
+}
 .centercv{
     margin: 0 auto;
     width: 70%;
@@ -42,6 +46,11 @@ body{
     text-decoration: none;
     color: inherit;
 }
+
+#addposttext{
+    height: 200px;
+}
+
 #register > h1{
     text-align: center;
     margin-top: 20px;
